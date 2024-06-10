@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: django_db
+      MYSQL_USER: django_user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  django:
+    build:
+      context: /backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  nextjs:
+    build:
+      context: /frontend
+    ports:
+      - "3000:3000"
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
